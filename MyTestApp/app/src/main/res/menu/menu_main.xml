@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+    <item android:id="@+id/Today"
+        android:title="Today"
+        android:orderInCategory="100" />
+    <item android:id="@+id/PersonalData"
+        android:title="Personal data"
+        android:orderInCategory="100" />
+    <item android:id="@+id/DailyActivity"
+        android:title="Daily activity"
+        android:orderInCategory="100" />
+    <item android:id="@+id/ShareResult"
+        android:title="Share result"
+        android:orderInCategory="100" />
+    <item android:id="@+id/About"
+        android:title="About"
+        android:orderInCategory="100" />
+</menu>
