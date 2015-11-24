@@ -9,7 +9,12 @@ package com.example.dashenka.mytestapp;
         import android.database.sqlite.SQLiteOpenHelper;
         import android.util.Log;
 
+        import java.util.ArrayList;
+        import java.util.List;
+
 public class DataBase extends SQLiteOpenHelper {
+
+    private static SQLiteDatabase mDb;
 
     private static final String DATABASE_NAME = "todo_app.db";
     private static final int DATABASE_VERSION = 1;
@@ -17,16 +22,20 @@ public class DataBase extends SQLiteOpenHelper {
 
     // поля таблицы
     public static final String COLUMN_ID = "_id";
-    public static final String COLUMN_CATEGORY = "category";
-    public static final String COLUMN_SUMMARY = "summary";
-    public static final String COLUMN_DESCRIPTION = "description";
+    public static final String COLUMN_NAME = "name";
+    public static final String COLUMN_AGE = "age";
+    public static final String COLUMN_WEIGHT = "weight";
+    public static final String COLUMN_HEIHT = "heiht";
+    public static final String COLUMN_DIETE = "diete";
 
     // запрос на создание базы данных
     private static final String DATABASE_CREATE = "create table "
             + DATABASE_TABLE + "(" + COLUMN_ID
-            + " integer primary key autoincrement, " + COLUMN_CATEGORY
-            + " text not null, " + COLUMN_SUMMARY + " text not null,"
-            + COLUMN_DESCRIPTION + " text not null" + ");";
+            + " integer primary key autoincrement, " + COLUMN_NAME
+            + " text not null, " + COLUMN_AGE + " text not null,"
+            + COLUMN_WEIGHT  + " text not null,"
+            + COLUMN_HEIHT + " text not null,"
+            + COLUMN_DIETE + " text not null" + ");";
 
     public DataBase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -47,34 +56,27 @@ public class DataBase extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS todos");
         onCreate(db);
     }
-
     /**
      * Создаёт новый элемент списка дел. Если создан успешно - возвращается
      * номер строки rowId, иначе -1
      */
-    public long createNewTodo(String category, String summary,
-                              String description) {
+    public long createNewTodo(String name, String age, String weight, String heiht, String diete)
+    {
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues initialValues = createContentValues(category, summary,
-                description);
+        ContentValues initialValues = createContentValues(name, age, weight, heiht, diete);
 
         long row = db.insert(DATABASE_TABLE, null, initialValues);
         db.close();
-
         return row;
     }
 
     /**
      * Обновляет список
      */
-    public boolean updateTodo(long rowId, String category, String summary,
-                              String description) {
+    public boolean updateTodo(long rowId, String name, String age, String weight, String heiht, String diete) {
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues updateValues = createContentValues(category, summary,
-                description);
-
-        return db.update(DATABASE_TABLE, updateValues, COLUMN_ID + "=" + rowId,
-                null) > 0;
+        ContentValues updateValues = createContentValues(name, age, weight, heiht, diete);
+        return db.update(DATABASE_TABLE, updateValues, COLUMN_ID + "=" + rowId, null) > 0;
     }
 
     /**
@@ -88,13 +90,12 @@ public class DataBase extends SQLiteOpenHelper {
 
     /**
      * Возвращает курсор со всеми элементами списка дел
-     *
      * @return курсор с результатами всех записей
      */
     public Cursor getAllTodos() {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.query(DATABASE_TABLE, new String[] { COLUMN_ID,
-                        COLUMN_CATEGORY, COLUMN_SUMMARY, COLUMN_DESCRIPTION }, null,
+                        COLUMN_NAME, COLUMN_AGE, COLUMN_WEIGHT,COLUMN_HEIHT,COLUMN_DIETE }, null,
                 null, null, null, null);
     }
 
@@ -104,8 +105,8 @@ public class DataBase extends SQLiteOpenHelper {
     public Cursor getTodo(long rowId) throws SQLException {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor mCursor = db.query(true, DATABASE_TABLE,
-                new String[] { COLUMN_ID, COLUMN_CATEGORY, COLUMN_SUMMARY,
-                        COLUMN_DESCRIPTION }, COLUMN_ID + "=" + rowId, null,
+                new String[]{COLUMN_ID, COLUMN_NAME, COLUMN_AGE,
+                        COLUMN_WEIGHT, COLUMN_HEIHT,COLUMN_DIETE}, COLUMN_ID + "=" + rowId, null,
                 null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
@@ -116,12 +117,15 @@ public class DataBase extends SQLiteOpenHelper {
     /*
      * Создаёт пару ключ-значение и записывает в базу
      */
-    private ContentValues createContentValues(String category, String summary,
-                                              String description) {
+    private ContentValues createContentValues(String name, String age,
+                                              String weight, String heiht, String diete) {
         ContentValues values = new ContentValues();
-        values.put(COLUMN_CATEGORY, category);
-        values.put(COLUMN_SUMMARY, summary);
-        values.put(COLUMN_DESCRIPTION, description);
+        values.put(COLUMN_NAME, name);
+        values.put(COLUMN_AGE, age);
+        values.put(COLUMN_WEIGHT, weight);
+        values.put(COLUMN_HEIHT, heiht);
+        values.put(COLUMN_DIETE, diete);
+
         return values;
     }
 }

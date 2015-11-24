@@ -20,6 +20,8 @@
             ></activity>
         <activity android:name=".PersonalData"
             ></activity>
+        <activity android:name=".PersonalDataEdit"
+            ></activity>
         <activity android:name=".ShareResults"
             ></activity>
     </application>

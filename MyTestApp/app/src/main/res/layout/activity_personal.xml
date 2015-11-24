@@ -1,60 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:weightSum="1">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Name"
         android:id="@+id/textName" />
 
-    <EditText
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="148dp"
         android:layout_height="wrap_content"
-        android:id="@+id/editName" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text=""
+        android:id="@+id/Name"
+        android:layout_weight="0.08" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Age"
         android:id="@+id/textAge" />
 
-    <EditText
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="159dp"
         android:layout_height="wrap_content"
-        android:id="@+id/editAge" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text=""
+        android:id="@+id/Age"
+        android:layout_weight="0.07" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Weight"
         android:id="@+id/textWeight" />
 
-    <EditText
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="346dp"
         android:layout_height="wrap_content"
-        android:id="@+id/editWeight" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text=""
+        android:id="@+id/Weight"
+        android:layout_weight="0.13" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Hight"
         android:id="@+id/textHight" />
 
-    <EditText
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="212dp"
         android:layout_height="wrap_content"
-        android:id="@+id/editHight" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text=""
+        android:id="@+id/Hight"
+        android:layout_weight="0.15" />
 
-    <Spinner
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Diete"
         android:id="@+id/Diete" />
+
+    <TextView
+        android:layout_width="212dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text=""
+        android:id="@+id/editDeite"
+        android:layout_weight="0.15" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
-        android:id="@+id/buttonSave" />
+        android:text="Edit"
+        android:id="@+id/buttonEdit" />
+
 </LinearLayout>

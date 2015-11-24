@@ -1,15 +1,34 @@
 package com.example.dashenka.mytestapp;
 
+import android.app.Activity;
+import android.app.ListActivity;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.view.View.OnClickListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Dashenka on 19.11.15.
@@ -18,120 +37,131 @@ public class PersonalData extends BaseActivity {
 
     String[] StringDiet = {"No food", "Breakfast", "Banana diet", "Meat diet"};
 
-    private DataBase mDbHelper;
     private Long mRowId;
-    private EditText mTitleText;
-    private EditText mBodyText;
-    private EditText meditWeight;
-    private EditText meditHight;
+    private TextView meditName;
+    private TextView meditAge;
+    private TextView meditWeight;
+    private TextView meditHight;
+    private TextView mDiete;
     private Spinner mCategory;
 
+    private Cursor cursor;
+    private DataBase mDbHelper;
+    private SQLiteDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal);
 
-        //Button
-        Button saveButton = (Button)findViewById(R.id.buttonSave);
-
-        //EditText
-        mTitleText = (EditText)findViewById(R.id.editName);
-        mBodyText = (EditText)findViewById(R.id.editAge);
-        meditWeight = (EditText)findViewById(R.id.editWeight);
-        meditHight = (EditText)findViewById(R.id.editHight);
-
-        mCategory = (Spinner) findViewById(R.id.Diete);
+        Button saveButton = (Button) findViewById(R.id.buttonEdit);
+        //TextView
+        meditName = (TextView) findViewById(R.id.Name);
+        meditAge = (TextView) findViewById(R.id.Age);
+        meditWeight = (TextView) findViewById(R.id.Weight);
+        meditHight = (TextView) findViewById(R.id.Hight);
+        mDiete = (TextView) findViewById(R.id.editDeite);
         // заголовок
         //mDiet.setPrompt("Diet");
 
-        //DataBase
         mDbHelper = new DataBase(this);
-        mRowId = null;
-        Bundle extras = getIntent().getExtras();
 
-        mRowId = (savedInstanceState == null) ? null
-                : (Long) savedInstanceState
-                .getSerializable(DataBase.COLUMN_ID);
-        if (extras != null) {
-            mRowId = extras.getLong(DataBase.COLUMN_ID);
-        }
+        mDbHelper.createNewTodo("","","","","");
+        //mDbHelper.createNewTodo("mTitleText","mBodyText","meditWeight");
 
-        populateFields();
+        mDb = mDbHelper.getWritableDatabase();
+
+        fillData();
 
         saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View view) {
-                /*if (TextUtils.isEmpty(meditName.getText().toString())) {
-                    Toast.makeText(PersonalData.this, "Данные не введены",
-                            Toast.LENGTH_LONG).show();
-                } else {*/
-                    saveState();
-                    setResult(RESULT_OK);
-                    finish();
-                //}
+                Toast.makeText(PersonalData.this, "Button Clicked", Toast.LENGTH_SHORT).show();
+                createNewTask();
             }
         });
     }
 
-    private void populateFields() {
-        if (mRowId != null) {
-            Cursor todo = mDbHelper.getTodo(mRowId);
-            startManagingCursor(todo);
-            String category = todo.getString(todo
-                    .getColumnIndexOrThrow(DataBase.COLUMN_CATEGORY));
-
-            for (int i = 0; i < mCategory.getCount(); i++) {
-
-                String s = (String) mCategory.getItemAtPosition(i);
-                Log.e(null, s + " " + category);
-                if (s.equalsIgnoreCase(category)) {
-                    mCategory.setSelection(i);
-                }
-            }
-
-            mTitleText.setText(todo.getString(todo
-                    .getColumnIndexOrThrow(DataBase.COLUMN_SUMMARY)));
-            mBodyText.setText(todo.getString(todo
-                    .getColumnIndexOrThrow(DataBase.COLUMN_DESCRIPTION)));
-            todo.close();
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        //saveState();
-        //outState.putSerializable(ToDoDatabase.COLUMN_ID, mRowId);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        //saveState();
-    }
-
-    @Override
-    protected void onResume() {
+    protected void onResume(){
         super.onResume();
-        populateFields();
+        fillData();
     }
 
-    private void saveState() {
-        String category = (String) mCategory.getSelectedItem();
-        String summary = mTitleText.getText().toString();
-        String description = mBodyText.getText().toString();
 
-        if (description.length() == 0 && summary.length() == 0) {
-            return;
-        }
+    private void createNewTask() {
+        Intent intent = new Intent(this, PersonalDataEdit.class);
+        startActivityForResult(intent, 1);
+    }
 
-        if (mRowId == null) {
-            long id = mDbHelper.createNewTodo(category, summary, description);
-            if (id > 0) {
-                mRowId = id;
+    /*private void fillData() {
+        mDb = mDbHelper.getWritableDatabase();
+        Cursor cursor = mDb.rawQuery("SELECT count(*) FROM itemtable", null);
+        cursor.moveToFirst();
+        if (cursor.getInt(0) > 0) {
+            mDbHelper.fetchAllReminders();
+            Cursor remindersCursor = mDbHelper.fetchAllReminders();
+            if (remindersCursor != null) {
+                String[] from = new String[]{DataBase.COLUMN_SUMMARY};
+                int[] to = new int[]{1};
+                SimpleCursorAdapter reminders = new SimpleCursorAdapter(this, R.layout.activity_personal, remindersCursor, from, to, 0);
+                //setListAdapter(reminders);
             }
-        } else {
-            mDbHelper.updateTodo(mRowId, category, summary, description);
         }
+        else
+        {
+        }
+    }*/
+
+    private void fillData() {
+        Log.d("filldata","filldata");
+        //mDbHelper.onCreate(mDb);
+        /*Cursor cursor = mDb.rawQuery("SELECT count(*) FROM itemtable", null);
+        cursor.moveToFirst();
+        if (cursor.getInt(0) > 0)
+        {mTitleText.setText("LALAALAL");}
+            else
+        {mTitleText.setText("APAPAP");}
+        */
+            List<String> name = new ArrayList<String>();
+            List<String> age = new ArrayList<String>();
+            List<String> weight = new ArrayList<String>();
+            List<String> heiht = new ArrayList<String>();
+            List<String> diete = new ArrayList<String>();
+            cursor = mDbHelper.getAllTodos();
+            //startManagingCursor(cursor);
+            //String[] from = new String[]{ DataBase.COLUMN_SUMMARY };
+            //String[] description = new String[]{ DataBase.COLUMN_DESCRIPTION};
+            //String[] id = new String[]{ DataBase.COLUMN_ID};
+
+            //int i = 1;
+            //String text = cursor.getString(from[i]);
+
+        //int[] to = new int[]{2};
+        //SimpleCursorAdapter reminders = new SimpleCursorAdapter(this, R.layout.activity_personal, cursor, from, to, 0);
+        //mBodyText.setText(reminders.convertToString(cursor));
+
+        if (cursor.moveToFirst())
+        {
+            do
+            {
+                name.add(cursor.getString(1));
+                meditName.setText(name.toString().replace("[", "").replace("]", "").replace(",", ""));
+                age.add(cursor.getString(2));
+                meditAge.setText(age.toString().replace("[", "").replace("]", "").replace(",", ""));
+                weight.add(cursor.getString(3));
+                meditWeight.setText(weight.toString().replace("[", "").replace("]", "").replace(",", ""));
+                heiht.add(cursor.getString(4));
+                meditHight.setText(heiht.toString().replace("[", "").replace("]", "").replace(",", ""));
+                diete.add(cursor.getString(5));
+                mDiete.setText(diete.toString().replace("[", "").replace("]", "").replace(",", ""));
+            }
+            while (cursor.moveToNext());
+        }
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
+
     }
+
 }
+
